@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>flowers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f03ed8 0%, #0b0b0c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .flower-palette {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .flower-palette h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .flower-item {
+            cursor: move;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+
+        .flower-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .flower-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .flower-name {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .canvas-area {
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 500px;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .canvas-area h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .drop-zone {
+            background: linear-gradient(45deg, #f0f9ff 25%, transparent 25%, transparent 75%, #f0f9ff 75%, #f0f9ff),
+                        linear-gradient(45deg, #f0f9ff 25%, transparent 25%, transparent 75%, #f0f9ff 75%, #f0f9ff);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border: 2px dashed #4a90e2;
+            border-radius: 10px;
+            min-height: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropped-flower {
+            position: absolute;
+            cursor: move;
+            transition: transform 0.1s;
+        }
+
+        .dropped-flower img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 3px solid white;
+        }
+
+        .dropped-flower:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+            z-index: 11;
+        }
+
+        .dropped-flower:hover .remove-btn {
+            display: block;
+        }
+
+        .controls {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .btn {
+            background: #ff39e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #0954a0;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Interactive Flower </h1>
+        
+        <div class="instructions">
+            <p><strong></strong> Hii soo this is a normal version ku ki vo chala nai tha to me ek bar ke lia normal sa ana diya hope you will like this also too aach lage to bata denna ek bar if  ye be work nai kia  to tell me i willl flowerIndex this 
+            </p>
+        </div>
+
+        <div class="flower-palette">
+            <h2>Flower Palette - Drag to Add</h2>
+            <div class="palette-grid" id="palette">
+                <!-- Flowers will be dynamically added here -->
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <h2>Your Garden Canvas</h2>
+            <div class="drop-zone" id="dropZone">
+                <!-- Dropped flowers will appear here -->
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="clearGarden()">Clear Garden</button>
+                <button class="btn" onclick="randomizeFlowers()">Add Random Flowers</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+        const flowers = [
+            
+            { name: 'Rose', image: 'image/rose.jpg' },
+            { name: 'Tulip', image: 'image/tulip.jpg' },
+            { name: 'Sunflower', image: 'image/sunflower.jpg' },
+            { name: 'Daisy', image: 'image/daisy.jpg' },
+            { name: 'Orchid', image: 'image/orchid.jpg' },
+            { name: 'Lily', image: 'image/lily.jpg' },
+            { name: 'Lavender', image: 'image/lavender.jpg' },
+            { name: 'Hydrangea', image: 'image/hydrangea.jpg' },
+            { name: 'Peony', image: 'image/peony.jpg' },
+            { name: 'Carnation', image: 'image/carnation.jpg' },
+            { name: 'Dahlia', image: 'image/dahlia.jpg' },
+            { name: 'Marigold', image: 'image/marigold.jpg' }
+        ];
+
+        const palette = document.getElementById('palette');
+        const dropZone = document.getElementById('dropZone');
+        let draggedElement = null;
+        let flowerCounter = 0;
+
+        // Initialize palette with flowers
+        flowers.forEach((flower, index) => {
+            const flowerItem = document.createElement('div');
+            flowerItem.className = 'flower-item';
+            flowerItem.draggable = true;
+            flowerItem.dataset.flowerIndex = index;
+            flowerItem.innerHTML = `
+                <img src="${flower.image}" alt="${flower.name}">
+                <div class="flower-name">${flower.name}</div>
+            `;
+            
+            flowerItem.addEventListener('dragstart', handleDragStart);
+            palette.appendChild(flowerItem);
+        });
+
+        // Handle drag start from palette
+        function handleDragStart(e) {
+            draggedElement = e.target.closest('.flower-item');
+            e.dataTransfer.effectAllowed = 'copy';
+            setTimeout(() => draggedElement.classList.add('dragging'), 0);
+        }
+
+        // Allow drop on canvas
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        // Handle drop on canvas
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            
+            if (draggedElement) {
+                const rect = dropZone.getBoundingClientRect();
+                const x = e.clientX - rect.left - 50;
+                const y = e.clientY - rect.top - 50;
+                
+                // Check if dragging from palette
+                const flowerIndex = draggedElement.dataset.flowerIndex;
+                if (flowerIndex !== undefined) {
+                    addFlowerToCanvas(flowerIndex, x, y);
+                } else if (draggedElement.classList.contains('dropped-flower')) {
+                    // Repositioning existing flower
+                    const offsetX = parseFloat(e.dataTransfer.getData('offsetX')) || 50;
+                    const offsetY = parseFloat(e.dataTransfer.getData('offsetY')) || 50;
+                    const newX = e.clientX - rect.left - offsetX;
+                    const newY = e.clientY - rect.top - offsetY;
+                    
+                    draggedElement.style.left = `${Math.max(0, Math.min(newX, dropZone.offsetWidth - 100))}px`;
+                    draggedElement.style.top = `${Math.max(0, Math.min(newY, dropZone.offsetHeight - 100))}px`;
+                }
+                
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
+            }
+        });
+
+        // Add flower to canvas
+        function addFlowerToCanvas(flowerIndex, x, y) {
+            const flower = flowers[flowerIndex];
+            const droppedFlower = document.createElement('div');
+            droppedFlower.className = 'dropped-flower';
+            droppedFlower.draggable = true;
+            droppedFlower.dataset.flowerId = flowerCounter++;
+            droppedFlower.style.left = `${Math.max(0, Math.min(x, dropZone.offsetWidth - 100))}px`;
+            droppedFlower.style.top = `${Math.max(0, Math.min(y, dropZone.offsetHeight - 100))}px`;
+            
+            droppedFlower.innerHTML = `
+                <img src="${flower.image}" alt="${flower.name}">
+                <button class="remove-btn" onclick="removeFlower(this)">×</button>
+            `;
+            
+            // Make dropped flowers draggable within canvas
+            droppedFlower.addEventListener('dragstart', (e) => {
+                draggedElement = e.target.closest('.dropped-flower');
+                const rect = draggedElement.getBoundingClientRect();
+                e.dataTransfer.setData('offsetX', e.clientX - rect.left);
+                e.dataTransfer.setData('offsetY', e.clientY - rect.top);
+            });
+            
+            dropZone.appendChild(droppedFlower);
+        }
+
+        // Remove flower from canvas
+        function removeFlower(btn) {
+            btn.closest('.dropped-flower').remove();
+        }
+
+        // Clear all flowers from canvas
+        function clearGarden() {
+            dropZone.innerHTML = '';
+        }
+
+        // Add random flowers to canvas
+        function randomizeFlowers() {
+            for (let i = 0; i < 10; i++) {
+                const randomFlower = Math.floor(Math.random() * flowers.length);
+                const x = Math.random() * (dropZone.offsetWidth - 100);
+                const y = Math.random() * (dropZone.offsetHeight - 100);
+                addFlowerToCanvas(randomFlower, x, y);
+            }
+        }
+    </script>
+</body>
+</html>
